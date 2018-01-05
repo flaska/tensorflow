@@ -13,8 +13,6 @@ from collections import Counter
 LR = 1e-3
 env = gym.make('CartPole-v0')
 input_size = 4
-goal_steps = 500
-score_requirement = 50
 initial_games = 10000
 
 def transform_actions(training_data, game_memory):
@@ -30,24 +28,19 @@ def transform_actions(training_data, game_memory):
 
 
 def initial_population():
-	training_data = []
-	scores = []
-	accepted_scores = []
+	game_records = []
 	for _ in range(initial_games):
 		score, game_memory = play.play(env = env, model = False, production = False)
-		scores.append(score)
-		if score >= score_requirement:
-			accepted_scores.append(score)
-			training_data = transform_actions(training_data, game_memory)
-
-	
-	# training_data_save = numpy.array(training_data)	
-	# numpy.save('observation_action_responses.npy', training_data_save)
-	
-	print('Average accepted score', mean(accepted_scores))
-	print('Median accepted score', median(accepted_scores))
-	print(Counter(accepted_scores))
-	
+		game_records.append([score, game_memory])
+				
+	score_requirement = 50
+				
+	training_data = []		
+		for record in len(game_records):
+			score  = record[0]
+			game_memory = record[1]
+			if score >= score_requirement:
+				training_data = transform_actions(training_data, game_memory)	
 	return training_data
 	
 
