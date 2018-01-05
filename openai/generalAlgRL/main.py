@@ -13,8 +13,8 @@ from collections import Counter
 LR = 1e-3
 env = gym.make('CartPole-v0')
 input_size = 4
-initial_games = 500
-generations = 5
+initial_games = 400
+generations = 2
 
 def transform_actions(training_data, game_memory):
 	for data in game_memory:
@@ -81,12 +81,16 @@ def train_model(training_data):
 	model.fit({'input':X}, {'targets':Y}, n_epoch=5, snapshot_step=500, show_metric=False, run_id='openaistuff')	
 	return model	
 	
+def demo(model):
+	for _ in range(2):
+		play.play(env = env, model = model, production = True)
+	
 training_data = play_games(False)
 model = tflearn.DNN(get_network_spec(input_size), tensorboard_dir='log')
 for _ in range(generations):
 	model = train_model(training_data)	
 	training_data = play_games(model)
-	
+	demo(model)
 	
 
 
