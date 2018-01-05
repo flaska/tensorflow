@@ -15,7 +15,7 @@ env = gym.make('CartPole-v0')
 input_size = 4
 goal_steps = 500
 score_requirement = 50
-initial_games = 100
+initial_games = 10000
 
 def transform_actions(training_data, game_memory):
 	for data in game_memory:
