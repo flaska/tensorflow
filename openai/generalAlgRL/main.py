@@ -36,11 +36,11 @@ def initial_population():
 	score_requirement = 50
 				
 	training_data = []		
-		for record in len(game_records):
-			score  = record[0]
-			game_memory = record[1]
-			if score >= score_requirement:
-				training_data = transform_actions(training_data, game_memory)	
+	for record in game_records:
+		score  = record[0]
+		game_memory = record[1]
+		if score >= score_requirement:
+			training_data = transform_actions(training_data, game_memory)	
 	return training_data
 	
 
