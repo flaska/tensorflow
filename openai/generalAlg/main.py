@@ -21,23 +21,8 @@ def initial_population():
 	scores = []
 	accepted_scores = []
 	for _ in range(initial_games):
-		score = 0
-		game_memory = []
-		prev_observation = []
 		score, game_memory = play.play(env = env, model = False, production = False)
-		#for _ in range(goal_steps):
-			#action = random.randrange(0,2)
-			#observation, reward, done, info = env.step(action)
-			#if len(prev_observation) > 0:
-			#	game_memory.append([prev_observation, action])
-				
-			#prev_observation = observation
-			#score += reward
-			#if done:
-			#	break
 		if score >= score_requirement:
-			#for record in game_memory:
-			#	training_data.append(record)
 			accepted_scores.append(score)
 			for data in game_memory:
 				observation = data[0]
@@ -45,11 +30,9 @@ def initial_population():
 				if scalar_action == 1:
 					vector_action = [0,1]					
 				elif scalar_action == 0:
-					vector_action = [1,0]
-				
+					vector_action = [1,0]				
 				training_data.append([data[0], vector_action])
-			
-			#print(training_data)
+
 		env.reset()
 		scores.append(score)
 	
@@ -97,21 +80,20 @@ def train_model(training_data, model):
 	
 def play_games(model):
 	scores = []
-
 	for each_game in range(10):
 		score = play.play(env = env, model = model, production = True)
 		scores.append(score)
-
 	print('Average Score', sum(scores)/len(scores))
-	print('Choice 1: {}, Choice 0: {}'.format(choices.count(1)/len(choices),choices.count(0)/len(choices)))		
 	
 	
 training_data = initial_population()
 
 model = tflearn.DNN(get_network_spec(4), tensorboard_dir='log')
-#model.load('./balance2.model')
+
 model = train_model(training_data, model)	
-#model.save('./balance2.model')
+model.save('./model')
+
+#model.load('./model')
 
 play_games(model)
 
