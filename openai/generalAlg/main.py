@@ -24,17 +24,20 @@ def initial_population():
 		score = 0
 		game_memory = []
 		prev_observation = []
-		for _ in range(goal_steps):
-			action = random.randrange(0,2)
-			observation, reward, done, info = env.step(action)
-			if len(prev_observation) > 0:
-				game_memory.append([prev_observation, action])
+		score, game_memory = play.play(env = env, model = False, production = False)
+		#for _ in range(goal_steps):
+			#action = random.randrange(0,2)
+			#observation, reward, done, info = env.step(action)
+			#if len(prev_observation) > 0:
+			#	game_memory.append([prev_observation, action])
 				
-			prev_observation = observation
-			score += reward
-			if done:
-				break
+			#prev_observation = observation
+			#score += reward
+			#if done:
+			#	break
 		if score >= score_requirement:
+			#for record in game_memory:
+			#	training_data.append(record)
 			accepted_scores.append(score)
 			for data in game_memory:
 				observation = data[0]
@@ -45,12 +48,12 @@ def initial_population():
 					vector_action = [1,0]
 				
 				training_data.append([data[0], vector_action])
-				
+			
+			#print(training_data)
 		env.reset()
 		scores.append(score)
 	
-	training_data_save = numpy.array(training_data)
-	
+	# training_data_save = numpy.array(training_data)	
 	# numpy.save('observation_action_responses.npy', training_data_save)
 	
 	print('Average accepted score', mean(accepted_scores))
@@ -75,7 +78,6 @@ def get_network_spec(input_size):
 	network = fully_connected(network, 128, activation='relu')
 	network = dropout(network, 0.8)	
 
-
 	network = fully_connected(network, 2, activation='softmax')
 	
 	network = regression(network, optimizer='adam', learning_rate=LR, loss='categorical_crossentropy', name='targets')
@@ -84,6 +86,8 @@ def get_network_spec(input_size):
 	
 	
 def train_model(training_data, model):
+	print(training_data)
+	print(numpy.array([i[0] for i in training_data]))
 	X = numpy.array([i[0] for i in training_data]).reshape(-1, len(training_data[0][0]), 1)
 	Y = [i[1] for i in training_data]
 		
@@ -95,18 +99,18 @@ def play_games(model):
 	scores = []
 
 	for each_game in range(10):
-		score = play.play(env, model)
+		score = play.play(env = env, model = model, production = True)
 		scores.append(score)
 
 	print('Average Score', sum(scores)/len(scores))
 	print('Choice 1: {}, Choice 0: {}'.format(choices.count(1)/len(choices),choices.count(0)/len(choices)))		
 	
 	
-#training_data = initial_population()
+training_data = initial_population()
 
 model = tflearn.DNN(get_network_spec(4), tensorboard_dir='log')
-model.load('./balance2.model')
-#model = train_model(training_data, model)	
+#model.load('./balance2.model')
+model = train_model(training_data, model)	
 #model.save('./balance2.model')
 
 play_games(model)
