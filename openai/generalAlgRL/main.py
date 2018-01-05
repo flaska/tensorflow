@@ -39,12 +39,16 @@ def play_games(model):
 	scores.sort(reverse = True)
 	score_requirement = scores[int(len(scores)/3)]
 	training_data = []		
+	acceptable_scores = []
 	for record in game_records:
 		score = record[0]		
 		game_memory = record[1]
 		if score >= score_requirement:
 			training_data = transform_actions(training_data, game_memory)	
+			acceptable_scores.append(score)
 	print("Average score", sum(scores)/len(scores))
+	print("Average acceptable score", sum(acceptable_scores)/len(acceptable_scores))
+	print("Training set length", len(training_data))
 	return training_data
 	
 
@@ -73,7 +77,7 @@ def get_network_spec(input_size):
 def train_model(training_data):
 	X = numpy.array([i[0] for i in training_data]).reshape(-1, len(training_data[0][0]), 1)
 	Y = [i[1] for i in training_data]		
-	model.fit({'input':X}, {'targets':Y}, n_epoch=5, snapshot_step=500, show_metric=True, run_id='openaistuff')	
+	model.fit({'input':X}, {'targets':Y}, n_epoch=5, snapshot_step=500, show_metric=False, run_id='openaistuff')	
 	return model	
 	
 training_data = play_games(False)
