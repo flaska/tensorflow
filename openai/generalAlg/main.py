@@ -15,7 +15,19 @@ env = gym.make('CartPole-v0')
 input_size = 4
 goal_steps = 500
 score_requirement = 50
-initial_games = 100
+initial_games = 10000
+
+def transform_actions(training_data, game_memory):
+	for data in game_memory:
+		observation = data[0]
+		scalar_action = data[1]
+		if scalar_action == 1:
+			vector_action = [0,1]					
+		elif scalar_action == 0:
+			vector_action = [1,0]				
+		training_data.append([data[0], vector_action])
+	return training_data
+
 
 def initial_population():
 	training_data = []
@@ -23,18 +35,11 @@ def initial_population():
 	accepted_scores = []
 	for _ in range(initial_games):
 		score, game_memory = play.play(env = env, model = False, production = False)
+		scores.append(score)
 		if score >= score_requirement:
 			accepted_scores.append(score)
-			for data in game_memory:
-				observation = data[0]
-				scalar_action = data[1]
-				if scalar_action == 1:
-					vector_action = [0,1]					
-				elif scalar_action == 0:
-					vector_action = [1,0]				
-				training_data.append([data[0], vector_action])
+			training_data = transform_actions(training_data, game_memory)
 
-		scores.append(score)
 	
 	# training_data_save = numpy.array(training_data)	
 	# numpy.save('observation_action_responses.npy', training_data_save)
