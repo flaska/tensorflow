@@ -13,7 +13,8 @@ from collections import Counter
 LR = 1e-3
 env = gym.make('CartPole-v0')
 input_size = 4
-initial_games = 300
+initial_games = 100
+generations = 5
 
 def transform_actions(training_data, game_memory):
 	for data in game_memory:
@@ -37,7 +38,7 @@ def play_games(model):
 					
 
 	scores.sort(reverse = True)
-	score_requirement = scores[int(len(scores)/3)]
+	score_requirement = scores[int(len(scores)/2)]
 	training_data = []		
 	acceptable_scores = []
 	for record in game_records:
@@ -48,7 +49,7 @@ def play_games(model):
 			acceptable_scores.append(score)
 	print("Average score", sum(scores)/len(scores))
 	print("Average acceptable score", sum(acceptable_scores)/len(acceptable_scores))
-	print("Training set length", len(training_data))
+	print("Training games", len(acceptable_scores))
 	return training_data
 	
 
@@ -81,15 +82,12 @@ def train_model(training_data):
 	return model	
 	
 training_data = play_games(False)
-
 model = tflearn.DNN(get_network_spec(input_size), tensorboard_dir='log')
-
-model = train_model(training_data)	
-
-training_data = play_games(model)
-
-model = train_model(training_data)	
-
-training_data = play_games(model)
+for _ in range(generations):
+	model = train_model(training_data)	
+	training_data = play_games(model)
 	
+	
+
+
 	
