@@ -2,6 +2,7 @@ import gym
 import random
 import numpy
 import tflearn
+import play
  
 from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.estimator import regression
@@ -92,27 +93,9 @@ def train_model(training_data, model):
 	
 def play_games(model):
 	scores = []
-	choices = []
 
 	for each_game in range(10):
-		score = 0
-		game_memory = []
-		prev_obs = []
-		env.reset()
-		for _ in range (goal_steps):
-			env.render();
-			if len(prev_obs) == 0:
-				action = random.randrange(0,2)
-			else:
-				action = numpy.argmax(model.predict(prev_obs.reshape(-1, len(prev_obs),1))[0])
-			choices.append(action)
-			
-			new_observation, reward, done, info = env.step(action)
-			prev_obs = new_observation
-			game_memory.append([new_observation, action])
-			score += reward
-			#if done:
-			#	break
+		score = play.play(env, model)
 		scores.append(score)
 
 	print('Average Score', sum(scores)/len(scores))
