@@ -13,7 +13,7 @@ from collections import Counter
 LR = 1e-3
 env = gym.make('CartPole-v0')
 input_size = 4
-initial_games = 100
+initial_games = 500
 generations = 5
 
 def transform_actions(training_data, game_memory):
@@ -38,7 +38,7 @@ def play_games(model):
 					
 
 	scores.sort(reverse = True)
-	score_requirement = scores[int(len(scores)/2)]
+	score_requirement = scores[int(len(scores)/4)]
 	training_data = []		
 	acceptable_scores = []
 	for record in game_records:
