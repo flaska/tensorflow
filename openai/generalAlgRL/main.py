@@ -13,7 +13,7 @@ from collections import Counter
 LR = 1e-3
 env = gym.make('CartPole-v0')
 input_size = 4
-games_in_generation = 500
+games_in_generation = 1000
 generations = 5
 
 def transform_actions(training_data, game_memory):
