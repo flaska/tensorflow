@@ -13,7 +13,7 @@ from collections import Counter
 LR = 1e-3
 env = gym.make('CartPole-v0')
 input_size = 4
-games_in_generation = 1000
+games_in_generation = 200
 generations = 5
 
 def transform_actions(training_data, game_memory):
@@ -38,7 +38,7 @@ def play_games(model):
 					
 
 	scores.sort(reverse = True)
-	score_requirement = scores[int(len(scores)/3)]
+	score_requirement = scores[int(len(scores)/2)]
 	training_data = []		
 	acceptable_scores = []
 	for record in game_records:
@@ -57,16 +57,13 @@ def play_games(model):
 def get_network_spec(input_size):
 	network = input_data(shape=[None, input_size, 1], name='input')
 
-	network = fully_connected(network, 128, activation='relu')
+	network = fully_connected(network, 64, activation='relu')
 	network = dropout(network, 0.8)
 	
 	network = fully_connected(network, 128, activation='relu')
 	network = dropout(network, 0.8)
 	
-	network = fully_connected(network, 128, activation='relu')
-	network = dropout(network, 0.8)
-	
-	network = fully_connected(network, 128, activation='relu')
+	network = fully_connected(network, 64, activation='relu')
 	network = dropout(network, 0.8)	
 	
 	network = fully_connected(network, 2, activation='softmax')
