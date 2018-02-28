@@ -10,6 +10,7 @@ from tflearn.layers.estimator import regression
 import tflearn.datasets.mnist as mnist
 import numpy
 import matplotlib.pyplot as plt
+import cv2
 
 network_size = 8
 
@@ -49,23 +50,23 @@ model = tflearn.DNN(network, tensorboard_verbose=0)
 model.load('./conv.model')
 
 
-def visual_test(index):
-    plt.imshow(numpy.reshape(testX[index],[28,28]), interpolation="nearest", cmap="gray")
+def visual_test(arr):
+    plt.imshow(numpy.reshape(arr,[28,28]), interpolation="nearest", cmap="gray")
     plt.show()    
-    pr = predict(testX[index])
+    pr = predict(arr)
     print("prediction ", pr)
 
 def predict(arr):
     return numpy.argmax(model.predict(arr.reshape(-1,28,28,1)))    
 
-# visual_test(550)    
-# visual_test(1000)    
+#visual_test(testX[550])    
+#visual_test(testX[1000])    
 # visual_test(18)    
 # visual_test(1200)    
 
 def eval_network():
     results = []
-    for i in range(0,10000):
+    for i in range(0,100):
         x = testX[i]
         y = numpy.argmax(testY[i])
         hy = predict(x)
@@ -75,4 +76,11 @@ def eval_network():
     acc = sum(results)/len(results)
     print('prediction accuracy: ', acc*100)
     
-eval_network()
+#eval_network()
+
+im = cv2.imread("examples/ex_1_2.png")   
+img = [0]*784
+for x in range(0,27):
+    for y in range(0,27):
+        img[y*27+x] = im[y][x][0]
+visual_test(img)
