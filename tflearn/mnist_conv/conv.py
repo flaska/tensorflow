@@ -11,6 +11,8 @@ import tflearn.datasets.mnist as mnist
 import numpy
 import matplotlib.pyplot as plt
 
+network_size = 8
+
 plt.figure(1, figsize=(28,28))
 
 X, Y, testX, testY = mnist.load_data(one_hot=True)
@@ -21,17 +23,18 @@ Y = numpy.split(Y,4)[0]
 X = X.reshape([-1, 28, 28, 1])
 testX = testX.reshape([-1, 28, 28, 1])
 
+
 # Building convolutional network
 network = input_data(shape=[None, 28, 28, 1], name='input')
-network = conv_2d(network, 8, 3, activation='relu', regularizer="L2")
+network = conv_2d(network, network_size*1, 3, activation='relu', regularizer="L2")
 network = max_pool_2d(network, 2)
 network = local_response_normalization(network)
-network = conv_2d(network, 16, 3, activation='relu', regularizer="L2")
+network = conv_2d(network, network_size*2, 3, activation='relu', regularizer="L2")
 network = max_pool_2d(network, 2)
 network = local_response_normalization(network)
-network = fully_connected(network, 32, activation='tanh')
+network = fully_connected(network, network_size*4, activation='tanh')
 network = dropout(network, 0.8)
-network = fully_connected(network, 64, activation='tanh')
+network = fully_connected(network, network_size*8, activation='tanh')
 network = dropout(network, 0.8)
 network = fully_connected(network, 10, activation='softmax')
 network = regression(network, optimizer='adam', learning_rate=0.02,
