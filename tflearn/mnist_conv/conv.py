@@ -9,6 +9,10 @@ from tflearn.layers.estimator import regression
 # Data loading and preprocessing
 import tflearn.datasets.mnist as mnist
 import numpy
+import matplotlib.pyplot as plt
+
+plt.figure(1, figsize=(28,28))
+
 X, Y, testX, testY = mnist.load_data(one_hot=True)
 
 X = numpy.split(X,4)[0]
@@ -35,8 +39,14 @@ network = regression(network, optimizer='adam', learning_rate=0.02,
 
 # Training
 model = tflearn.DNN(network, tensorboard_verbose=0)
-model.fit({'input': X}, {'target': Y}, n_epoch=5,
-           validation_set=({'input': testX}, {'target': testY}),
-           snapshot_step=100, show_metric=True, run_id='convnet_mnist')
-		   
-model.save('./conv.model')
+#model.fit({'input': X}, {'target': Y}, n_epoch=5,
+#           validation_set=({'input': testX}, {'target': testY}),
+#           snapshot_step=100, show_metric=True, run_id='convnet_mnist')
+#model.save('./conv.model')
+
+model.load('./conv.model')
+
+
+plt.imshow(numpy.reshape(testX[1],[28,28]), interpolation="nearest", cmap="gray")
+
+plt.show()
