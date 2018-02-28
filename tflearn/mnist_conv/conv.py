@@ -47,6 +47,13 @@ model = tflearn.DNN(network, tensorboard_verbose=0)
 model.load('./conv.model')
 
 
-plt.imshow(numpy.reshape(testX[1],[28,28]), interpolation="nearest", cmap="gray")
+def predict(index):
+    plt.imshow(numpy.reshape(testX[index],[28,28]), interpolation="nearest", cmap="gray")
+    plt.show()
+    pr = numpy.argmax(model.predict(testX[index].reshape(-1,28,28,1)))
+    print("prediction ", pr)
 
-plt.show()
+predict(550)    
+predict(1000)    
+predict(18)    
+predict(1200)    
