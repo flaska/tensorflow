@@ -62,18 +62,14 @@ def initial_population():
 def get_network_spec(input_size):
 	network = input_data(shape=[None, input_size, 1], name='input')
 
-	network = fully_connected(network, 128, activation='relu')
+	network = fully_connected(network, 64, activation='relu')
 	network = dropout(network, 0.8)
 	
-	network = fully_connected(network, 128, activation='relu')
+	network = fully_connected(network, 64, activation='relu')
 	network = dropout(network, 0.8)
 	
-	network = fully_connected(network, 128, activation='relu')
+	network = fully_connected(network, 64, activation='relu')
 	network = dropout(network, 0.8)
-	
-	network = fully_connected(network, 128, activation='relu')
-	network = dropout(network, 0.8)	
-
 
 	network = fully_connected(network, 2, activation='softmax')
 	

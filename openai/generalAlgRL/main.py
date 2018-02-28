@@ -13,8 +13,8 @@ from collections import Counter
 LR = 1e-3
 env = gym.make('CartPole-v0')
 input_size = 4
-initial_games = 400
-generations = 2
+games_in_generation = 200
+generations = 5
 
 def transform_actions(training_data, game_memory):
 	for data in game_memory:
@@ -31,14 +31,14 @@ def transform_actions(training_data, game_memory):
 def play_games(model):
 	game_records = []
 	scores = []
-	for _ in range(initial_games):
+	for _ in range(games_in_generation):
 		score, game_memory = play.play(env = env, model = model, production = False)
 		scores.append(score)
 		game_records.append([score, game_memory])
 					
 
 	scores.sort(reverse = True)
-	score_requirement = scores[int(len(scores)/4)]
+	score_requirement = scores[int(len(scores)/2)]
 	training_data = []		
 	acceptable_scores = []
 	for record in game_records:
@@ -48,6 +48,7 @@ def play_games(model):
 			training_data = transform_actions(training_data, game_memory)	
 			acceptable_scores.append(score)
 	print("Average score", sum(scores)/len(scores))
+	print("Score requirement", score_requirement)
 	print("Average acceptable score", sum(acceptable_scores)/len(acceptable_scores))
 	print("Training games", len(acceptable_scores))
 	return training_data
@@ -56,18 +57,15 @@ def play_games(model):
 def get_network_spec(input_size):
 	network = input_data(shape=[None, input_size, 1], name='input')
 
-	network = fully_connected(network, 128, activation='relu')
+	network = fully_connected(network, 64, activation='relu')
 	network = dropout(network, 0.8)
 	
 	network = fully_connected(network, 128, activation='relu')
 	network = dropout(network, 0.8)
 	
-	network = fully_connected(network, 128, activation='relu')
-	network = dropout(network, 0.8)
-	
-	network = fully_connected(network, 128, activation='relu')
+	network = fully_connected(network, 64, activation='relu')
 	network = dropout(network, 0.8)	
-
+	
 	network = fully_connected(network, 2, activation='softmax')
 	
 	network = regression(network, optimizer='adam', learning_rate=LR, loss='categorical_crossentropy', name='targets')
