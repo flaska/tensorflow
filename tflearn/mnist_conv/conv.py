@@ -32,31 +32,47 @@ network = local_response_normalization(network)
 network = conv_2d(network, network_size*2, 3, activation='relu', regularizer="L2")
 network = max_pool_2d(network, 2)
 network = local_response_normalization(network)
-network = fully_connected(network, network_size*4, activation='tanh')
+network = fully_connected(network, network_size*4, activation='tanh', regularizer="L2")
 network = dropout(network, 0.8)
-network = fully_connected(network, network_size*8, activation='tanh')
+network = fully_connected(network, network_size*8, activation='tanh', regularizer="L2")
 network = dropout(network, 0.8)
 network = fully_connected(network, 10, activation='softmax')
 network = regression(network, optimizer='adam', learning_rate=0.02,
                      loss='categorical_crossentropy', name='target')
 
-# Training
 model = tflearn.DNN(network, tensorboard_verbose=0)
-#model.fit({'input': X}, {'target': Y}, n_epoch=5,
-#           validation_set=({'input': testX}, {'target': testY}),
-#           snapshot_step=100, show_metric=True, run_id='convnet_mnist')
+
+# Training
+#model.fit({'input': X}, {'target': Y}, n_epoch=5, validation_set=({'input': testX}, {'target': testY}), snapshot_step=100, show_metric=True, run_id='convnet_mnist')
 #model.save('./conv.model')
 
 model.load('./conv.model')
 
 
-def predict(index):
+def visual_test(index):
     plt.imshow(numpy.reshape(testX[index],[28,28]), interpolation="nearest", cmap="gray")
-    plt.show()
-    pr = numpy.argmax(model.predict(testX[index].reshape(-1,28,28,1)))
+    plt.show()    
+    pr = predict(testX[index])
     print("prediction ", pr)
 
-predict(550)    
-predict(1000)    
-predict(18)    
-predict(1200)    
+def predict(arr):
+    return numpy.argmax(model.predict(arr.reshape(-1,28,28,1)))    
+
+# visual_test(550)    
+# visual_test(1000)    
+# visual_test(18)    
+# visual_test(1200)    
+
+def eval_network():
+    results = []
+    for i in range(0,10000):
+        x = testX[i]
+        y = numpy.argmax(testY[i])
+        hy = predict(x)
+        results.append(y==hy)
+        if (y!=hy):
+            print('wrong prediction at index: ',i)
+    acc = sum(results)/len(results)
+    print('prediction accuracy: ', acc*100)
+    
+eval_network()
