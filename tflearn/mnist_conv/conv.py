@@ -78,9 +78,10 @@ def eval_network():
     
 #eval_network()
 
-im = cv2.imread("examples/ex_1_2.png")   
+im = cv2.imread("examples/ex_2_2.png")   
 img = [0]*784
-for x in range(0,27):
-    for y in range(0,27):
-        img[y*27+x] = im[y][x][0]
+img = numpy.reshape(img, [28,28])
+for y in range(0,27):
+    for x in range(0,27):
+        img[y][x] = im[y][x][0]
 visual_test(img)
